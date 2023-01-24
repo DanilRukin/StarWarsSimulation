@@ -1,6 +1,7 @@
 #pragma once
 #include "Semaphore.h"
 #include "FileMemMap.h"
+#include "CoreAPI.h"
 
 namespace Core
 {

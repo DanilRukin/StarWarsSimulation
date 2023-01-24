@@ -1,20 +1,23 @@
-﻿// SystemInOneApplication.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
-//
+﻿#include <iostream>
+#include "CloneArmy.h"
+#include "CommandCenter.h"
+#include "SpaceFleet.h"
 
-#include <iostream>
+using namespace StarWarsSystem;
+
+
 
 int main()
 {
-    std::cout << "Hello World!\n";
+    /*HANDLE commandCenterThread, cloneArmyThread;
+    DWORD commandCenterThreadId, cloneArmyThreadId;
+    std::cout << "Запуск потоков" << std::endl;
+    cloneArmyThread = CreateThread(nullptr, 0, CommandCenterThread, (void*)nullptr, 0, &cloneArmyThreadId);
+    commandCenterThread = CreateThread(nullptr, 0, CommandCenterThread, (void*)nullptr, 0, &commandCenterThreadId);
+    
+    WaitForSingleObject(commandCenterThread, INFINITE);
+    WaitForSingleObject(cloneArmyThread, INFINITE);
+
+    std::cout << "Конец работы" << std::endl;*/
 }
 
-// Запуск программы: CTRL+F5 или меню "Отладка" > "Запуск без отладки"
-// Отладка программы: F5 или меню "Отладка" > "Запустить отладку"
-
-// Советы по началу работы 
-//   1. В окне обозревателя решений можно добавлять файлы и управлять ими.
-//   2. В окне Team Explorer можно подключиться к системе управления версиями.
-//   3. В окне "Выходные данные" можно просматривать выходные данные сборки и другие сообщения.
-//   4. В окне "Список ошибок" можно просматривать ошибки.
-//   5. Последовательно выберите пункты меню "Проект" > "Добавить новый элемент", чтобы создать файлы кода, или "Проект" > "Добавить существующий элемент", чтобы добавить в проект существующие файлы кода.
-//   6. Чтобы снова открыть этот проект позже, выберите пункты меню "Файл" > "Открыть" > "Проект" и выберите SLN-файл.

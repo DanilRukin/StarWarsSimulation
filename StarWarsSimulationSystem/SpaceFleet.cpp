@@ -1,11 +1,4 @@
-#include "starwarspch.h"
 #include "SpaceFleet.h"
-#include "SpaceShipsFactory.h"
-
-void StarWarsSystem::SpaceFleet::Run()
-{
-
-}
 
 StarWarsSystem::SpaceFleet::SpaceFleet()
 {
@@ -18,4 +11,11 @@ StarWarsSystem::SpaceFleet::SpaceFleet()
 	{
 		_fighterjets->push_back(factory.CreateFighterJet());
 	}
+	_channelC1 = new Core::Channel<Report>(CHANNEL_C1_NAME);
+	_channelC7 = new Core::Channel<CommandCenterOrder>(CHANNEL_C7_NAME);
+}
+
+void StarWarsSystem::SpaceFleet::Run()
+{
+
 }

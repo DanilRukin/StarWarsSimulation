@@ -1,5 +1,6 @@
 #pragma once
-#include "pch.h"
+#include "CoreAPI.h"
+#include <Windows.h>
 #include <string>
 
 namespace Core

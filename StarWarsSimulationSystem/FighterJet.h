@@ -9,10 +9,7 @@ namespace StarWarsSystem
 		class FighterJet : public SpaceShip
 		{
 		public:
-			FighterJet(int hp, int damage) : SpaceShip(hp, damage)
-			{
-
-			}
+			FighterJet(int hp, int damage);
 		};
 	}
 }

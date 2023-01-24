@@ -20,41 +20,15 @@ namespace StarWarsSystem
 			SpaceShipStatus _status;
 
 		public:
-			SpaceShip(int hp, int damage)
-			{
-				if (hp < 1)
-					throw std::exception(("HP is very small { " + std::to_string(hp) + " }").c_str());
-				if (damage < 1)
-					throw std::exception(("Damage is very small { " + std::to_string(damage) + " }").c_str());
-				_healthPoints = hp;
-				_maxHealthPoints = hp;
-				_damage = damage;
-				_status = SpaceShipStatus::Ok;
-			}
+			SpaceShip(int hp, int damage);
 
-			int GetCurrentHp()
-			{
-				return _healthPoints;
-			}
+			int GetCurrentHp();
 
-			virtual int DoDamage()
-			{
-				return _damage;
-			}
+			virtual int DoDamage();
 
-			virtual void AcceptDamage(int damage)
-			{
-				_healthPoints -= damage;
-				if (_healthPoints < 0)
-					_healthPoints = 0;
-				if (_healthPoints == 0)
-					_status = SpaceShipStatus::Destroyed;
-			}
+			virtual void AcceptDamage(int damage);
 
-			SpaceShipStatus CurrentStatus()
-			{
-				return _status;
-			}
+			SpaceShipStatus CurrentStatus();
 		};
 	}
 }
