@@ -152,6 +152,8 @@
     <ClInclude Include="Channel.h" />
     <ClInclude Include="CloneArmy.h" />
     <ClInclude Include="CommandCenter.h" />
+    <ClInclude Include="Damage.h" />
+    <ClInclude Include="DroidStation.h" />
     <ClInclude Include="FighterJet.h" />
     <ClInclude Include="FileMemMap.h" />
     <ClInclude Include="Flagship.h" />
@@ -162,6 +164,8 @@
     <ClInclude Include="SpaceShip.h" />
     <ClInclude Include="SpaceShipsFactory.h" />
     <ClInclude Include="StarWarsAPI.h" />
+    <ClInclude Include="SupportForDroidStation.h" />
+    <ClInclude Include="TradeFederation.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CloneArmy.cpp" />
@@ -173,6 +177,7 @@
     <ClCompile Include="Report.cpp" />
     <ClCompile Include="SpaceFleet.cpp" />
     <ClCompile Include="SpaceShip.cpp" />
+    <ClCompile Include="TradeFederation.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
