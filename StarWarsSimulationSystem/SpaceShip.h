@@ -1,17 +1,18 @@
 #pragma once
 #include <exception>
 #include <string>
+#include "StarWarsAPI.h"
 
 namespace StarWarsSystem
 {
 	namespace SpaceShips
 	{
-		enum SpaceShipStatus
+		enum StarWarsObject SpaceShipStatus
 		{
 			Ok, Destroyed
 		};
 
-		class SpaceShip
+		class StarWarsObject SpaceShip
 		{
 		protected:
 			int _healthPoints;

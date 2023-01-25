@@ -1,12 +1,13 @@
 #pragma once
 
 #include "SpaceShip.h"
+#include "StarWarsAPI.h"
 
 namespace StarWarsSystem
 {
 	namespace SpaceShips
 	{
-		class Flagship : public SpaceShip
+		class StarWarsObject Flagship : public SpaceShip
 		{
 		private:
 			int _energyShieldHealthPoints;

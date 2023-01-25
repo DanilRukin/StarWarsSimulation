@@ -1,7 +1,8 @@
 #pragma once
+
 #include "Semaphore.h"
 #include "FileMemMap.h"
-#include "CoreAPI.h"
+#include "StarWarsAPI.h"
 
 namespace Core
 {
@@ -10,7 +11,7 @@ namespace Core
 	* Виден клиентам библиотеки.
 	*/
 	template <class T> // ШАБЛОННЫЕ КЛАССЫ ДОЛЖНЫ СОДЕРЖАТЬ РЕАЛИЗАЦИЮ ТОЛЬКО В *.H ФАЙЛАХ
-	class Core_API Channel // ну, либо явно определить будущие шаблоны, например, template class Channel<int>;
+	class StarWarsObject Channel // ну, либо явно определить будущие шаблоны, например, template class Channel<int>;
 	{
 	private:
 		Semaphore* _free, * _empty;

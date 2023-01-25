@@ -1,7 +1,6 @@
 #pragma once
 
 #include "StarWarsAPI.h"
-#include <string>
 
 namespace StarWarsSystem
 {

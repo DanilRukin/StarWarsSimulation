@@ -112,6 +112,9 @@
       <AdditionalLibraryDirectories>..\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>StarWarsSimulationSystem.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y /d "..\x64\Debug\StarWarsSimulationSystem.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -133,9 +136,6 @@
     <ClCompile Include="SystemInOneApplication.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Core\Core.vcxproj">
-      <Project>{43b6c259-6846-47c9-9d2b-7a06d7f3703f}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\StarWarsSimulationSystem\StarWarsSimulationSystem.vcxproj">
       <Project>{1ae086ab-6eb5-426d-ba5d-c733b2ed532e}</Project>
     </ProjectReference>

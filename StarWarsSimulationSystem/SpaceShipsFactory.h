@@ -2,12 +2,13 @@
 
 #include "FighterJet.h"
 #include "Flagship.h"
+#include "StarWarsAPI.h"
 
 namespace StarWarsSystem
 {
 	namespace SpaceShips
 	{
-		class SpaceShipsFactory
+		class StarWarsObject SpaceShipsFactory
 		{
 		public:
 			FighterJet* CreateFighterJet()

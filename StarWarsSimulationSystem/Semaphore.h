@@ -1,5 +1,6 @@
 #pragma once
-#include "CoreAPI.h"
+
+#include "StarWarsAPI.h"
 #include <Windows.h>
 #include <string>
 
@@ -9,7 +10,7 @@ namespace Core
 	* Класс семафора.
 	* Виден клиентам библиотеки.
 	*/
-	class Core_API Semaphore
+	class StarWarsObject Semaphore
 	{
 	private:
 		HANDLE semaphore;
@@ -50,4 +51,5 @@ namespace Core
 		}
 	};
 }
+
 

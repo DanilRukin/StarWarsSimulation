@@ -1,7 +1,9 @@
 #pragma once
+
+
 #include <string>
 #include <Windows.h>
-#include "CoreAPI.h"
+#include "StarWarsAPI.h"
 
 namespace Core
 {
@@ -10,7 +12,7 @@ namespace Core
 	* Используется только внутри библиотеки.
 	*/
 	template <class T>
-	class Core_API FileMemMap
+	class StarWarsObject FileMemMap
 	{
 	private:
 		void* _data; // данные для сохранения
@@ -53,4 +55,3 @@ namespace Core
 		}
 	};
 }
-

@@ -1,5 +1,9 @@
 ﻿// dllmain.cpp : Определяет точку входа для приложения DLL.
 #include <windows.h>
+#include "Channel.h"
+#include "CoreAPI.h"
+#include "FileMemMap.h"
+#include "Semaphore.h"
 
 BOOL APIENTRY DllMain( HMODULE hModule,
                        DWORD  ul_reason_for_call,

@@ -1,6 +1,3 @@
-#pragma once
-
-
 /**
 * Для использования одного и того же файла заголовка для dll и для клиентского приложения
 */
@@ -10,10 +7,12 @@
 * что означает, что эти классы/функции будут включены в таблицу экспорта dll
 */
 #define Core_API __declspec(dllexport) // для включения класса/функции в таблицу экспорта dll
+#define EXTERN_CORE 
 #else
 /**
 * При включении заговка, например, Semaphore.h в клиентский код, во время Core_API будет расширен
 * в __declspec(dllimport), что означает, что этот класс будет импортирован из dll
 */
 #define Core_API __declspec(dllimport) // для импорта из dll в клиентский код
+#define EXTERN_CORE extern
 #endif // CORE_EXPORTS
