@@ -19,14 +19,21 @@ namespace StarWarsSystem
 		int _currentCountOfTanks, _maxCountOfTanks;
 		int _currentAirDefenseCount, _maxAirDefenseCount;
 		int _droidHp, _tankHp, _airDefenseHp;
+		int _droidDamage, _tankDamage, _airDefenseDamage;
+		long _timeForWaitingTradeFederation;
+		const char* _droidStationTag = "[Droid Station]: ";
 	public:
-		DroidStation(int droidsCount, int tanksCount, int airDefenseCount);
+		DroidStation(int droidsCount, int tanksCount, int airDefenseCount, long timeForWaitingTradeFederation = INFINITE);
 		~DroidStation();
 		int DoDamageForArmy();
 		int DoDamageForFleet();
 		bool IsTanksStateOk();
 		bool IsDroidsArmyStateOk();
 		bool IsAirDefenseStateOk();
+		void AcceptDamage(Damage damage);
+		void AcceptSupport(SupportForDroidStation support);
+		void ProcessDamageFromCloneArmy(Damage damage);
+		void ProcessDamageFromSpaceFleet(Damage damage);
 		void Run();
 	};
 }

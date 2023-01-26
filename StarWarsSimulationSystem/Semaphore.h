@@ -36,9 +36,9 @@ namespace Core
 		* Вход в семафор для ожидания
 		* @param milliseconds время ожидания в миллисекундах
 		*/
-		void WaitOne(unsigned long milliseconds = INFINITE)
+		DWORD WINAPI WaitOne(unsigned long milliseconds = INFINITE)
 		{
-			WaitForSingleObject(semaphore, milliseconds);
+			return WaitForSingleObject(semaphore, milliseconds);
 		}
 
 		/**

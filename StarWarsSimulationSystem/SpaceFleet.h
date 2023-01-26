@@ -7,6 +7,7 @@
 #include "CommandCenter.h"
 #include "Report.h"
 #include "GlabalNames.h"
+#include "Damage.h"
 
 namespace StarWarsSystem
 {
@@ -18,11 +19,17 @@ namespace StarWarsSystem
 		SpaceShips::FighterJet** _fighterjets;
 		
 		Core::Channel<Report>* _channelC1; // канал для приема отчетов от армии/флота;
-		Core::Channel<CommandCenterOrder>* _channelC7; // канал для обмена данными с флотом
+		Core::Channel<Damage>* _channelC2; // для атаки на станцию дроидов
+		Core::Channel<int>* _channelC3; // прием урона от станции дроидов
+		Core::Channel<CommandCenterOrder>* _channelC7; // для приема приказов от командного центра
+
+		const char* _spaceFleetTag = "[Space Fleet]: ";
 	public:
 		
 		SpaceFleet();
-
+		~SpaceFleet();
+		Damage DoDamageForDroidStation();
+		void AcceptDamage(int damage);
 		void Run();
 	};
 }

@@ -164,6 +164,7 @@
     <ClInclude Include="SpaceShip.h" />
     <ClInclude Include="SpaceShipsFactory.h" />
     <ClInclude Include="StarWarsAPI.h" />
+    <ClInclude Include="StarWarsSimulationSystem.h" />
     <ClInclude Include="SupportForDroidStation.h" />
     <ClInclude Include="TradeFederation.h" />
   </ItemGroup>
@@ -171,6 +172,7 @@
     <ClCompile Include="CloneArmy.cpp" />
     <ClCompile Include="CommandCenter.cpp" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="DroidStation.cpp" />
     <ClCompile Include="FighterJet.cpp" />
     <ClCompile Include="Flagship.cpp" />
     <ClCompile Include="GlobalNames.cpp" />

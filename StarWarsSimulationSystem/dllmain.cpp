@@ -1,5 +1,5 @@
 ﻿// dllmain.cpp : Определяет точку входа для приложения DLL.
-#include "StarWarsAPI.h"
+#include "StarWarsSimulationSystem.h" // <-- тут все объявления
 #include <windows.h>
 
 BOOL APIENTRY DllMain( HMODULE hModule,

@@ -41,14 +41,11 @@ void StarWarsSystem::CommandCenter::Run()
 	std::cout << _commandCenterTag << "командный центр запущен" << std::endl;
 	while (true)
 	{
-		//
-		// ∆дем отчет от армии/флота
-		//
 		std::cout << _commandCenterTag << "ожидание отчета от армии/флота" << std::endl;
-		Report reportFromFleetOrArmy = _channelC1->Get();
-		//
-		// ќценка состо€ни€ армии/флота
-		//
+		Report reportFromFleetOrArmy;
+		Core::ChannelResult<Report> reportResult;
+		reportResult  = _channelC1->Get();
+		reportFromFleetOrArmy = reportResult.Data;
 		if (reportFromFleetOrArmy.ReportType == ReportType::FromFleet)
 		{
 			std::cout << _commandCenterTag << "получен отчет от флота" << std::endl;
@@ -68,7 +65,6 @@ void StarWarsSystem::CommandCenter::Run()
 		}
 		else
 		{
-			// TODO: оценить состо€ние армии
 			std::cout << _commandCenterTag << "получен отчет от армии" << std::endl;
 			if (IsArmyStateOk(reportFromFleetOrArmy))
 			{

@@ -6,7 +6,7 @@ namespace StarWarsSystem
 {
 	enum StarWarsObject DamageSender
 	{
-		CloneArmy, SpaceFleet
+		ArmyOfClones, Fleet
 	};
 
 	class StarWarsObject Damage
@@ -16,7 +16,7 @@ namespace StarWarsSystem
 		int DamageAmount;
 		Damage()
 		{
-			Sender = DamageSender::CloneArmy;
+			Sender = DamageSender::ArmyOfClones;
 			DamageAmount = 0;
 		}
 	};

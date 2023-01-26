@@ -31,6 +31,7 @@ namespace StarWarsSystem
 	*/
 	class StarWarsObject SupportForDroidStationOrder
 	{
+	public:
 		SupportForDroidStationType SupportType;
 		int SupportAmount;
 		SupportForDroidStationOrder()

@@ -7,6 +7,16 @@
 namespace Core
 {
 	/**
+	* Контрейнер для результата со статусом ожидания
+	*/
+	template <class T>
+	class StarWarsObject ChannelResult
+	{
+	public:
+		T Data;
+		DWORD WaitStatus;
+	};
+	/**
 	* Класс канала для передачи данных между потоками/процессами.
 	* Виден клиентам библиотеки.
 	*/
@@ -42,20 +52,28 @@ namespace Core
 			}
 		}
 
-		void Put(T data)
+		void Put(T data, long waitForMilliseconds = INFINITE)
 		{
-			_free->WaitOne();
+			_free->WaitOne(waitForMilliseconds);
 			_fileMem->SetData(data);
 			_empty->Release();
 		}
 
-		T Get()
+		ChannelResult<T> Get(long waitForMilliseconds = INFINITE)
 		{
 			T data;
-			_empty->WaitOne();
+			ChannelResult<T> result;
+			DWORD waitStatus = _empty->WaitOne(waitForMilliseconds);
+			if (waitStatus == WAIT_TIMEOUT)
+			{
+				result.WaitStatus = waitStatus;
+				return result;
+			}
 			data = _fileMem->GetData();
-			_free->Release();
-			return data;
+			_free->Release();  // ReleaseSemaphore(free, 1, 0);
+			result.WaitStatus = waitStatus;
+			result.Data = data;
+			return result;
 		}
 	};
 }
