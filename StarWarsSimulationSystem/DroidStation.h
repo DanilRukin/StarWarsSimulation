@@ -4,10 +4,11 @@
 #include "Channel.h"
 #include "SupportForDroidStation.h"
 #include "Damage.h"
+#include "PrintableObject.h"
 
 namespace StarWarsSystem
 {
-	class StarWarsObject DroidStation
+	class StarWarsObject DroidStation : public PrintableObject
 	{
 	private:
 		Core::Channel<Damage>* _channelC2; // принимать урон от армии или флота
@@ -23,7 +24,7 @@ namespace StarWarsSystem
 		long _timeForWaitingTradeFederation;
 		const char* _droidStationTag = "[Droid Station]: ";
 	public:
-		DroidStation(int droidsCount, int tanksCount, int airDefenseCount, long timeForWaitingTradeFederation = INFINITE);
+		DroidStation(int droidsCount, int tanksCount, int airDefenseCount, bool isMultiThread, long timeForWaitingTradeFederation = INFINITE);
 		~DroidStation();
 		int DoDamageForArmy();
 		int DoDamageForFleet();

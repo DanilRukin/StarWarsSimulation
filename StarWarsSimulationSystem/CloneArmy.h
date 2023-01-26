@@ -7,11 +7,12 @@
 #include "GlabalNames.h"
 #include <iostream>
 #include "Damage.h"
+#include "PrintableObject.h"
 
 
 namespace StarWarsSystem
 {
-	class StarWarsObject CloneArmy
+	class StarWarsObject CloneArmy : public PrintableObject
 	{
 	private:
 		Core::Channel<CommandCenterOrder>* _channelC8;  // для приема приказов из командного центра
@@ -24,7 +25,7 @@ namespace StarWarsSystem
 		int _cloneWarriorDamage, _tankDamage;
 		Report _stateReport;
 	public:
-		CloneArmy(int amountOfClones, int amountOfTanks);
+		CloneArmy(int amountOfClones, int amountOfTanks, bool isMultiThread);
 		~CloneArmy();
 		Damage DoDamageForDroidStation();
 		void AcceptDamage(int damage);

@@ -12,4 +12,6 @@ namespace StarWarsSystem
 	extern StarWarsObject const char* CHANNEL_C6_NAME;
 	extern StarWarsObject const char* CHANNEL_C7_NAME;
 	extern StarWarsObject const char* CHANNEL_C8_NAME;
+
+	extern StarWarsObject const char* SEMAPHORE_FOR_PRINT_NAME;
 }

@@ -8,10 +8,11 @@
 #include "Report.h"
 #include "GlabalNames.h"
 #include "Damage.h"
+#include "PrintableObject.h"
 
 namespace StarWarsSystem
 {
-	class StarWarsObject SpaceFleet
+	class StarWarsObject SpaceFleet : public PrintableObject
 	{
 	private:
 		int _fighterjetsCount;
@@ -26,7 +27,7 @@ namespace StarWarsSystem
 		const char* _spaceFleetTag = "[Space Fleet]: ";
 	public:
 		
-		SpaceFleet();
+		SpaceFleet(bool isMultiThread);
 		~SpaceFleet();
 		Damage DoDamageForDroidStation();
 		void AcceptDamage(int damage);

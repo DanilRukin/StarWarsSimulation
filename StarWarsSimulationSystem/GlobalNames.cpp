@@ -8,3 +8,5 @@ const char* StarWarsSystem::CHANNEL_C5_NAME = "channel_c5";
 const char* StarWarsSystem::CHANNEL_C6_NAME = "channel_c6";
 const char* StarWarsSystem::CHANNEL_C7_NAME = "channel_c7";
 const char* StarWarsSystem::CHANNEL_C8_NAME = "channel_c8";
+
+const char* StarWarsSystem::SEMAPHORE_FOR_PRINT_NAME = "print_to_console";

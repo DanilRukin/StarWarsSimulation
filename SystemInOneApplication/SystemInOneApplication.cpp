@@ -59,13 +59,14 @@ DWORD WINAPI TradeFederationRun(LPVOID pVoid)
 int main()
 {
     setlocale(LC_ALL, "ru");
+    bool isMultiThread = true;
     HANDLE commandCenterThread, cloneArmyThread, fleetThread, droidStationThread, tradeFederationThread;
     DWORD commandCenterThreadId, cloneArmyThreadId, fleetThreadId, droidStationThreadId, tradeFederationThreadId;
-    army = new CloneArmy(100, 10);
-    fleet = new SpaceFleet();
-    commandCenter = new CommandCenter();
-    station = new DroidStation(1000000, 10000, 5000, 30000);
-    federation = new TradeFederation(10000000, 10000000);
+    army = new CloneArmy(100, 10, isMultiThread);
+    fleet = new SpaceFleet(isMultiThread);
+    commandCenter = new CommandCenter(isMultiThread);
+    station = new DroidStation(1000000, 10000, 5000, isMultiThread, 30000);
+    federation = new TradeFederation(10000000, 10000000, isMultiThread);
     std::cout << "Запуск потоков" << std::endl;
     cloneArmyThread = CreateThread(nullptr, 0, ArmyRun, (void*)nullptr, 0, &cloneArmyThreadId);
     commandCenterThread = CreateThread(nullptr, 0, CommandCenterRun, (void*)nullptr, 0, &commandCenterThreadId);

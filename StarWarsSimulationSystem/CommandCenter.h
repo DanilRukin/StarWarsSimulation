@@ -4,13 +4,14 @@
 #include <iostream>
 #include "Report.h"
 #include "GlabalNames.h"
+#include "PrintableObject.h"
 
 namespace StarWarsSystem
 {
 	/**
 	* ѕриказы командного центра
 	*/
-	enum StarWarsObject CommandCenterOrder
+	enum StarWarsObject CommandCenterOrder 
 	{
 		StartAttack, StopAttack
 	};
@@ -20,7 +21,7 @@ namespace StarWarsSystem
 	*  ласс командного центра дл€ удаленного управлени€ армией клонов и космическим флотом.
 	* ¬се наименовани€ переменных соответствуют разработанной схеме.
 	*/
-	class StarWarsObject CommandCenter
+	class StarWarsObject CommandCenter : public PrintableObject
 	{
 	private:
 		/* “.к. HANDLE канала открываетс€/создаетс€ по имени, то _channelC7 в этом классе будет указывать на тот же
@@ -35,7 +36,7 @@ namespace StarWarsSystem
 
 		bool IsFleetStateOk(Report report);
 	public:
-		CommandCenter();
+		CommandCenter(bool isMultiThread);
 
 		void Run();
 	};

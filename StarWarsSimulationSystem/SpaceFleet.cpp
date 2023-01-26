@@ -1,7 +1,7 @@
 #include "SpaceFleet.h"
 #include <iostream>
 
-StarWarsSystem::SpaceFleet::SpaceFleet()
+StarWarsSystem::SpaceFleet::SpaceFleet(bool isMultiThread) : PrintableObject(isMultiThread)
 {
 	SpaceShips::SpaceShipsFactory factory;
 	_firstFlagship = factory.CreateFlagship();
@@ -16,7 +16,8 @@ StarWarsSystem::SpaceFleet::SpaceFleet()
 	_channelC2 = new Core::Channel<Damage>(CHANNEL_C2_NAME);
 	_channelC3 = new Core::Channel<int>(CHANNEL_C3_NAME);
 	_channelC7 = new Core::Channel<CommandCenterOrder>(CHANNEL_C7_NAME);
-	std::cout << _spaceFleetTag << "космический флот создан" << std::endl;
+	Print(_spaceFleetTag, "космический флот создан");
+	// std::cout << _spaceFleetTag << "космический флот создан" << std::endl;
 }
 
 StarWarsSystem::SpaceFleet::~SpaceFleet()
@@ -78,16 +79,19 @@ void StarWarsSystem::SpaceFleet::AcceptDamage(int damage)
 
 void StarWarsSystem::SpaceFleet::Run()
 {
-	std::cout << _spaceFleetTag << "запуск" << std::endl;
+	Print(_spaceFleetTag, "запуск");
+	// std::cout << _spaceFleetTag << "запуск" << std::endl;
 	Report report;
 	int aliveFighterjetsCount, responseFromDroidStation;
 	Core::ChannelResult<CommandCenterOrder> orderResult;
 	Core::ChannelResult<int> responseResult;
 	CommandCenterOrder order;
 	Damage damage;
+	std::string message;
 	while (true)
 	{
-		std::cout << _spaceFleetTag << "создание отчета о состоянии и отправка в командный центр..." << std::endl;
+		Print(_spaceFleetTag, "создание отчета о состоянии и отправка в командный центр...");
+		// std::cout << _spaceFleetTag << "создание отчета о состоянии и отправка в командный центр..." << std::endl;
 		aliveFighterjetsCount = 0;
 		for (int i = 0; i < _fighterjetsCount; i++)
 		{
@@ -98,30 +102,41 @@ void StarWarsSystem::SpaceFleet::Run()
 			_secondFlagship->CurrentStatus());
 		_channelC1->Put(report);
 
-		std::cout << _spaceFleetTag << "ожидание приказа от командного центра..." << std::endl;
+		Print(_spaceFleetTag, "ожидание приказа от командного центра...");
+		// std::cout << _spaceFleetTag << "ожидание приказа от командного центра..." << std::endl;
 		orderResult = _channelC7->Get();
 		order = orderResult.Data;
 		if (order == CommandCenterOrder::StartAttack)
 		{
-			std::cout << _spaceFleetTag << "получен приказ о проведении атакующего действия" << std::endl;
+			Print(_spaceFleetTag, "получен приказ о проведении атакующего действия");
+			// std::cout << _spaceFleetTag << "получен приказ о проведении атакующего действия" << std::endl;
 			damage = DoDamageForDroidStation();
-			std::cout << _spaceFleetTag << "Нанесение удара по станции дроидов с уроном = "
+			message = "Нанесение удара по станции дроидов с уроном = " + std::to_string(damage.DamageAmount);
+			Print(_spaceFleetTag, message.c_str());
+			/*std::cout << _spaceFleetTag << "Нанесение удара по станции дроидов с уроном = "
 				<< damage.DamageAmount
-				<< std::endl;
+				<< std::endl;*/
 			_channelC2->Put(damage);
-			std::cout << _spaceFleetTag << "ожидание ответных действий от станции дроидов..." << std::endl;
+			Print(_spaceFleetTag, "ожидание ответных действий от станции дроидов...");
+			// std::cout << _spaceFleetTag << "ожидание ответных действий от станции дроидов..." << std::endl;
 			responseResult = _channelC3->Get();
 			responseFromDroidStation = responseResult.Data;
-			std::cout << _spaceFleetTag << "получен урон от станции дроидов = "
+			message = "получен урон от станции дроидов = " + std::to_string(responseFromDroidStation);
+			Print(_spaceFleetTag, message.c_str());
+			/*std::cout << _spaceFleetTag << "получен урон от станции дроидов = "
 				<< responseFromDroidStation
-				<< std::endl;
+				<< std::endl;*/
 			AcceptDamage(responseFromDroidStation);
 		}
 		else if (order == CommandCenterOrder::StopAttack)
 		{
-			std::cout << _spaceFleetTag << "получен приказ об отступлении... перегруппировка" << std::endl;
+			Print(_spaceFleetTag, "получен приказ об отступлении... перегруппировка");
+			// std::cout << _spaceFleetTag << "получен приказ об отступлении... перегруппировка" << std::endl;
 		}
 		else
-			std::cout << _spaceFleetTag << "получен НЕПОНЯТНЫЙ приказ" << std::endl;
+		{
+			Print(_spaceFleetTag, "получен НЕПОНЯТНЫЙ приказ");
+			// std::cout << _spaceFleetTag << "получен НЕПОНЯТНЫЙ приказ" << std::endl;
+		}			
 	}
 }

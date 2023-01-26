@@ -28,56 +28,65 @@ bool StarWarsSystem::CommandCenter::IsFleetStateOk(Report report) // оценивает с
 		return true;
 }
 
-StarWarsSystem::CommandCenter::CommandCenter()
+StarWarsSystem::CommandCenter::CommandCenter(bool isMultiThread) : PrintableObject(isMultiThread)
 {
 	_channelC1 = new Core::Channel<Report>(CHANNEL_C1_NAME);
 	_channelC7 = new Core::Channel<CommandCenterOrder>(CHANNEL_C7_NAME);
 	_channelC8 = new Core::Channel<CommandCenterOrder>(CHANNEL_C8_NAME);
-	std::cout << _commandCenterTag << "командный центр создан" << std::endl;
+	Print(_commandCenterTag, "командный центр создан");
+	// std::cout << _commandCenterTag << "командный центр создан" << std::endl;
 }
 
 void StarWarsSystem::CommandCenter::Run()
 {
-	std::cout << _commandCenterTag << "командный центр запущен" << std::endl;
+	Print(_commandCenterTag, "командный центр запущен");
+	// std::cout << _commandCenterTag << "командный центр запущен" << std::endl;
 	while (true)
 	{
-		std::cout << _commandCenterTag << "ожидание отчета от армии/флота" << std::endl;
+		Print(_commandCenterTag, "ожидание отчета от армии/флота");
+		// std::cout << _commandCenterTag << "ожидание отчета от армии/флота" << std::endl;
 		Report reportFromFleetOrArmy;
 		Core::ChannelResult<Report> reportResult;
 		reportResult  = _channelC1->Get();
 		reportFromFleetOrArmy = reportResult.Data;
 		if (reportFromFleetOrArmy.ReportType == ReportType::FromFleet)
 		{
-			std::cout << _commandCenterTag << "получен отчет от флота" << std::endl;
+			Print(_commandCenterTag, "получен отчет от флота");
+			// std::cout << _commandCenterTag << "получен отчет от флота" << std::endl;
 			if (IsFleetStateOk(reportFromFleetOrArmy))
 			{
 				// приказ об отступлении
-				std::cout << _commandCenterTag << "отправка приказа флоту об окончании атаки" << std::endl;
+				Print(_commandCenterTag, "отправка приказа флоту об окончании атаки");
+				// std::cout << _commandCenterTag << "отправка приказа флоту об окончании атаки" << std::endl;
 				_channelC7->Put(CommandCenterOrder::StopAttack);
 			}
 			else
 			{
 				// приказ о наступлении
-				std::cout << _commandCenterTag
-					<< "отправка приказа флоту о проведении атакующих действий" << std::endl;
+				Print(_commandCenterTag, "отправка приказа флоту о проведении атакующих действий");
+				/*std::cout << _commandCenterTag
+					<< "отправка приказа флоту о проведении атакующих действий" << std::endl;*/
 				_channelC7->Put(CommandCenterOrder::StartAttack);
 			}
 		}
 		else
 		{
-			std::cout << _commandCenterTag << "получен отчет от армии" << std::endl;
+			Print(_commandCenterTag, "получен отчет от армии");
+			// std::cout << _commandCenterTag << "получен отчет от армии" << std::endl;
 			if (IsArmyStateOk(reportFromFleetOrArmy))
 			{
 				// приказ о наступлении
-				std::cout << _commandCenterTag
-					<< "отправка приказа армии о проведении атакующих действий" << std::endl;
+				Print(_commandCenterTag, "отправка приказа армии о проведении атакующих действий");
+				/*std::cout << _commandCenterTag
+					<< "отправка приказа армии о проведении атакующих действий" << std::endl;*/
 				_channelC8->Put(CommandCenterOrder::StartAttack);
 			}
 			else
 			{
 				// приказ об отступлении
-				std::cout << _commandCenterTag
-					<< "отправка приказа армии об отступлении" << std::endl;
+				Print(_commandCenterTag, "отправка приказа армии об отступлении");
+				/*std::cout << _commandCenterTag
+					<< "отправка приказа армии об отступлении" << std::endl;*/
 				_channelC8->Put(CommandCenterOrder::StopAttack);
 			}
 		}

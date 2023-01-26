@@ -3,7 +3,8 @@
 #include "GlabalNames.h"
 #include "Channel.h"
 
-StarWarsSystem::DroidStation::DroidStation(int droidsCount, int tanksCount, int airDefenseCount, long timeForWaitingTradeFederation)
+StarWarsSystem::DroidStation::DroidStation(int droidsCount, int tanksCount, int airDefenseCount, bool isMultiThread, long timeForWaitingTradeFederation)
+    : PrintableObject(isMultiThread)
 {
     if (droidsCount < 1)
         _currentCountOfDroids = 1;
@@ -32,7 +33,8 @@ StarWarsSystem::DroidStation::DroidStation(int droidsCount, int tanksCount, int 
     _channelC4 = new Core::Channel<int>(CHANNEL_C4_NAME);
     _channelC5 = new Core::Channel<SupportForDroidStationOrder>(CHANNEL_C5_NAME);
     _channelC6 = new Core::Channel<SupportForDroidStation>(CHANNEL_C6_NAME);
-    std::cout << _droidStationTag << "станция создана" << std::endl;
+    Print(_droidStationTag, "станция создана");
+    //std::cout << _droidStationTag << "станция создана" << std::endl;
 }
 
 StarWarsSystem::DroidStation::~DroidStation()
@@ -138,53 +140,67 @@ void StarWarsSystem::DroidStation::ProcessDamageFromCloneArmy(Damage damage)
     SupportForDroidStationOrder order;
     int damageForFleet;
     int additionalAmoutnOfAirDefense;
-    std::cout << _droidStationTag << "атакует космический флота, полученный урон: "
+    std::string message;
+    message = "атакует космический флот, полученный урон: " + std::to_string(damage.DamageAmount);
+    Print(_droidStationTag, message.c_str());
+    /*std::cout << _droidStationTag << "атакует космический флот, полученный урон: "
         << damage.DamageAmount
-        << std::endl;
+        << std::endl;*/
     AcceptDamage(damage);
     damageForFleet = DoDamageForFleet();
-    std::cout << _droidStationTag << "ответный удар космическому флоту, урон: "
+    message = "ответный удар космическому флоту, урон: " + std::to_string(damageForFleet);
+    Print(_droidStationTag, message.c_str());
+    /*std::cout << _droidStationTag << "ответный удар космическому флоту, урон: "
         << damageForFleet
-        << std::endl;
+        << std::endl;*/
     _channelC3->Put(damageForFleet);
     if (IsAirDefenseStateOk())
     {
-        std::cout << _droidStationTag << "оценка состояния средств ПВО..."
+        Print(_droidStationTag, "оценка состояния средств ПВО...состояние хорошее");
+        /*std::cout << _droidStationTag << "оценка состояния средств ПВО..."
             << "состояние хорошее"
-            << std::endl;
+            << std::endl;*/
     }
     else
     {
-        std::cout << _droidStationTag << "оценка состояния средств ПВО..."
+        Print(_droidStationTag, "оценка состояния средств ПВО...состояние плохое");
+        /*std::cout << _droidStationTag << "оценка состояния средств ПВО..."
             << "состояние плохое"
-            << std::endl;
+            << std::endl;*/
         additionalAmoutnOfAirDefense = (_maxAirDefenseCount - _currentAirDefenseCount) / 2;
         if (additionalAmoutnOfAirDefense == 0)
             additionalAmoutnOfAirDefense = 1;
-        std::cout << _droidStationTag << "отправка заказа на доп. средства ПВО в количестве: "
+        message = "отправка заказа на доп. средства ПВО в количестве: " + std::to_string(additionalAmoutnOfAirDefense) + " штук";
+        Print(_droidStationTag, message.c_str());
+        /*std::cout << _droidStationTag << "отправка заказа на доп. средства ПВО в количестве: "
             << additionalAmoutnOfAirDefense << " штук"
-            << std::endl;
+            << std::endl;*/
         order.SupportAmount = additionalAmoutnOfAirDefense;
         order.SupportType = SupportForDroidStationType::AirDefense;
 
         _channelC5->Put(order);
 
-        std::cout << _droidStationTag << "ожидание ответа от станции дроидов в течение: "
+        message = "ожидание ответа от станции дроидов в течение: " + std::to_string(_timeForWaitingTradeFederation) + " мс";
+        Print(_droidStationTag, message.c_str());
+        /*std::cout << _droidStationTag << "ожидание ответа от станции дроидов в течение: "
             << _timeForWaitingTradeFederation << " мс"
-            << std::endl;
+            << std::endl;*/
 
         supportChannelResult = _channelC6->Get(_timeForWaitingTradeFederation);
         if (supportChannelResult.WaitStatus == WAIT_TIMEOUT)
         {
-            std::cout << _droidStationTag << "ожидание помощи прекращено по тайм ауту" << std::endl;
+            Print(_droidStationTag, "ожидание помощи прекращено по тайм ауту");
+            // std::cout << _droidStationTag << "ожидание помощи прекращено по тайм ауту" << std::endl;
             return;
         }
         else
         {
             support = supportChannelResult.Data;
-            std::cout << _droidStationTag << "получены доп. средства ПВО в количестве: "
+            message = "получены доп. средства ПВО в количестве: " + std::to_string(support.SupportAmount) + " штук";
+            Print(_droidStationTag, message.c_str());
+            /*std::cout << _droidStationTag << "получены доп. средства ПВО в количестве: "
                 << support.SupportAmount << " штук"
-                << std::endl;
+                << std::endl;*/
             AcceptSupport(support);
         }
     }
@@ -197,53 +213,67 @@ void StarWarsSystem::DroidStation::ProcessDamageFromSpaceFleet(Damage damage)
     SupportForDroidStationOrder order;
     int damageForArmy;
     int additionalAmoutnOfTanks;
-    std::cout << _droidStationTag << "атакует армия клонов, полученный урон: "
+    std::string message;
+    message = "атакует армия клонов, полученный урон: " + std::to_string(damage.DamageAmount);
+    Print(_droidStationTag, message.c_str());
+    /*std::cout << _droidStationTag << "атакует армия клонов, полученный урон: "
         << damage.DamageAmount
-        << std::endl;
+        << std::endl;*/
     AcceptDamage(damage);
     damageForArmy = DoDamageForArmy();
-    std::cout << _droidStationTag << "ответный удар по армии клонов, урон: "
+    message = "ответный удар по армии клонов, урон: " + std::to_string(damageForArmy);
+    Print(_droidStationTag, message.c_str());
+    /*std::cout << _droidStationTag << "ответный удар по армии клонов, урон: "
         << damageForArmy
-        << std::endl;
+        << std::endl;*/
     _channelC4->Put(damageForArmy);
     if (IsTanksStateOk())
     {
-        std::cout << _droidStationTag << "оценка состояния средств наземной обороны..."
+        Print(_droidStationTag, "оценка состояния средств наземной обороны...состояние хорошее");
+        /*std::cout << _droidStationTag << "оценка состояния средств наземной обороны..."
             << "состояние хорошее"
-            << std::endl;
+            << std::endl;*/
     }
     else
     {
-        std::cout << _droidStationTag << "оценка состояния средств наземной обороны..."
+        Print(_droidStationTag, "оценка состояния средств наземной обороны...состояние плохое");
+        /*std::cout << _droidStationTag << "оценка состояния средств наземной обороны..."
             << "состояние плохое"
-            << std::endl;
+            << std::endl;*/
         additionalAmoutnOfTanks = (_maxCountOfTanks - _currentCountOfTanks) / 2;
         if (additionalAmoutnOfTanks == 0)
             additionalAmoutnOfTanks = 1;
-        std::cout << _droidStationTag << "отправка заказа на доп. средства назменой обороны в количестве: "
+        message = "отправка заказа на доп. средства назменой обороны в количестве: " + std::to_string(additionalAmoutnOfTanks) + " штук";
+        Print(_droidStationTag, message.c_str());
+        /*std::cout << _droidStationTag << "отправка заказа на доп. средства назменой обороны в количестве: "
             << additionalAmoutnOfTanks << " штук"
-            << std::endl;
+            << std::endl;*/
         order.SupportAmount = additionalAmoutnOfTanks;
         order.SupportType = SupportForDroidStationType::GroundDefense;
 
         _channelC5->Put(order);
 
-        std::cout << _droidStationTag << "ожидание ответа от станции дроидов в течение: "
+        message = "ожидание ответа от станции дроидов в течение: " + std::to_string(_timeForWaitingTradeFederation) + " мс";
+        Print(_droidStationTag, message.c_str());
+        /*std::cout << _droidStationTag << "ожидание ответа от станции дроидов в течение: "
             << _timeForWaitingTradeFederation << " мс"
-            << std::endl;
+            << std::endl;*/
 
         supportChannelResult = _channelC6->Get(_timeForWaitingTradeFederation);
         if (supportChannelResult.WaitStatus == WAIT_TIMEOUT)
         {
+            Print(_droidStationTag, "ожидание помощи прекращено по тайм ауту");
             std::cout << _droidStationTag << "ожидание помощи прекращено по тайм ауту" << std::endl;
             return;
         }
         else
-        {
+        {           
             support = supportChannelResult.Data;
-            std::cout << _droidStationTag << "получены доп. средства назменой обороны в количестве: "
+            message = "получены доп. средства назменой обороны в количестве: " + std::to_string(support.SupportAmount) + " штук";
+            Print(_droidStationTag, message.c_str());
+            /*std::cout << _droidStationTag << "получены доп. средства назменой обороны в количестве: "
                 << support.SupportAmount << " штук"
-                << std::endl;
+                << std::endl;*/
             AcceptSupport(support);
         }
     }
@@ -251,7 +281,8 @@ void StarWarsSystem::DroidStation::ProcessDamageFromSpaceFleet(Damage damage)
 
 void StarWarsSystem::DroidStation::Run()
 {
-    std::cout << _droidStationTag << "станция запущена" << std::endl;
+    Print(_droidStationTag, "станция запущена");
+    // std::cout << _droidStationTag << "станция запущена" << std::endl;
     Damage damage;
     Core::ChannelResult<Damage> damageChannelResult;
     SupportForDroidStationOrder order;
@@ -260,7 +291,8 @@ void StarWarsSystem::DroidStation::Run()
     int additionalAmoutnOfTanks, additionalAmountOfAirDefense;
     while (true)
     {
-        std::cout << _droidStationTag << "ожидание атаки от армии или флота..." << std::endl;
+        Print(_droidStationTag, "ожидание атаки от армии или флота...");
+        // std::cout << _droidStationTag << "ожидание атаки от армии или флота..." << std::endl;
         damageChannelResult = _channelC2->Get();
         damage = damageChannelResult.Data;
         if (damage.Sender == DamageSender::ArmyOfClones)
