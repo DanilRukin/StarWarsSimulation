@@ -28,23 +28,26 @@ bool StarWarsSystem::CommandCenter::IsFleetStateOk(Report report) // оценивает с
 		return true;
 }
 
-StarWarsSystem::CommandCenter::CommandCenter(bool isMultiThread) : PrintableObject(isMultiThread)
+StarWarsSystem::CommandCenter::CommandCenter(bool isMultiThread, PlanetBlackMarket* blackMarket) : PrintableObject(isMultiThread)
 {
 	_channelC1 = new Core::Channel<Report>(CHANNEL_C1_NAME);
 	_channelC7 = new Core::Channel<CommandCenterOrder>(CHANNEL_C7_NAME);
 	_channelC8 = new Core::Channel<CommandCenterOrder>(CHANNEL_C8_NAME);
+	_channelC9 = new Core::Channel<int>(CHANNEL_C9_NAME);
+	_channelC10 = new Core::Channel<int>(CHANNEL_C10_NAME);
+	_blackMarket = blackMarket;
 	Print(_commandCenterTag, "командный центр создан");
-	// std::cout << _commandCenterTag << "командный центр создан" << std::endl;
 }
 
 void StarWarsSystem::CommandCenter::Run()
 {
 	Print(_commandCenterTag, "командный центр запущен");
-	// std::cout << _commandCenterTag << "командный центр запущен" << std::endl;
+	int additionalSpaceShips = 0;
+	int additionalTanks = 0;
+	std::string message;
 	while (true)
 	{
 		Print(_commandCenterTag, "ожидание отчета от армии/флота");
-		// std::cout << _commandCenterTag << "ожидание отчета от армии/флота" << std::endl;
 		Report reportFromFleetOrArmy;
 		Core::ChannelResult<Report> reportResult;
 		reportResult  = _channelC1->Get();
@@ -52,42 +55,51 @@ void StarWarsSystem::CommandCenter::Run()
 		if (reportFromFleetOrArmy.ReportType == ReportType::FromFleet)
 		{
 			Print(_commandCenterTag, "получен отчет от флота");
-			// std::cout << _commandCenterTag << "получен отчет от флота" << std::endl;
 			if (IsFleetStateOk(reportFromFleetOrArmy))
 			{
 				// приказ об отступлении
 				Print(_commandCenterTag, "отправка приказа флоту об окончании атаки");
-				// std::cout << _commandCenterTag << "отправка приказа флоту об окончании атаки" << std::endl;
 				_channelC7->Put(CommandCenterOrder::StopAttack);
+				if (_blackMarket != nullptr)
+				{
+					Print(_commandCenterTag, "Закупка дополнительного вооружения для флота на черном рынке");
+					additionalSpaceShips = _blackMarket->BuySpaceShipSupply();
+					message = "Дополнительное вооружение для флота в количестве [" + std::to_string(additionalSpaceShips) + "] закуплено. Отправка...";
+					Print(_commandCenterTag, message.c_str());
+
+					_channelC9->Put(additionalSpaceShips); // отправка вооружений					
+				}
 			}
 			else
 			{
 				// приказ о наступлении
 				Print(_commandCenterTag, "отправка приказа флоту о проведении атакующих действий");
-				/*std::cout << _commandCenterTag
-					<< "отправка приказа флоту о проведении атакующих действий" << std::endl;*/
-				_channelC7->Put(CommandCenterOrder::StartAttack);
+				_channelC7->Put(CommandCenterOrder::StartAttack);								
 			}
 		}
 		else
 		{
 			Print(_commandCenterTag, "получен отчет от армии");
-			// std::cout << _commandCenterTag << "получен отчет от армии" << std::endl;
 			if (IsArmyStateOk(reportFromFleetOrArmy))
 			{
 				// приказ о наступлении
 				Print(_commandCenterTag, "отправка приказа армии о проведении атакующих действий");
-				/*std::cout << _commandCenterTag
-					<< "отправка приказа армии о проведении атакующих действий" << std::endl;*/
 				_channelC8->Put(CommandCenterOrder::StartAttack);
 			}
 			else
 			{
 				// приказ об отступлении
 				Print(_commandCenterTag, "отправка приказа армии об отступлении");
-				/*std::cout << _commandCenterTag
-					<< "отправка приказа армии об отступлении" << std::endl;*/
 				_channelC8->Put(CommandCenterOrder::StopAttack);
+				if (_blackMarket != nullptr)
+				{
+					Print(_commandCenterTag, "Закупка дополнительного вооружения для армии клонов на черном рынке");
+					additionalTanks = _blackMarket->BuyTanksSupply();
+					message = "Дополнительное вооружение для армии в количестве [" + std::to_string(additionalTanks) + "] закуплено. Отправка...";
+					Print(_commandCenterTag, message.c_str());
+
+					_channelC10->Put(additionalTanks); // отправка вооружений					
+				}
 			}
 		}
 	}

@@ -23,7 +23,7 @@ namespace StarWarsSystem
 		{
 			if (_isMultiThread)
 			{
-				_printSem->WaitOne();
+				_printSem->WaitOne(40000);
 				std::cout << tag << message << std::endl;
 				_printSem->Release();
 			}

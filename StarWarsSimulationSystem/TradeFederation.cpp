@@ -3,7 +3,7 @@
 #include "PrintableObject.h"
 #include <iostream>
 
-StarWarsSystem::TradeFederation::TradeFederation(int amountOfAirDefense, int amountOfTanks, bool isMultiThread) : PrintableObject(isMultiThread)
+StarWarsSystem::TradeFederation::TradeFederation(int amountOfAirDefense, int amountOfTanks, bool isMultiThread, PlanetBlackMarket* blackMarket) : PrintableObject(isMultiThread)
 {
 	if (amountOfAirDefense < 1)
 		_currentAmountOfAirDefense = 1;
@@ -15,6 +15,7 @@ StarWarsSystem::TradeFederation::TradeFederation(int amountOfAirDefense, int amo
 		_currentAmountOfTanks = amountOfTanks;
 	_channelC5 = new Core::Channel<SupportForDroidStationOrder>(CHANNEL_C5_NAME);
 	_channelC6 = new Core::Channel<SupportForDroidStation>(CHANNEL_C6_NAME);
+	_blackMarket = blackMarket;
 	Print(_tradeFederationTag, "Торговая Федерация создана");
 }
 
@@ -58,49 +59,72 @@ void StarWarsSystem::TradeFederation::Run()
 	SupportForDroidStationOrder order;
 	SupportForDroidStation support;
 	Core::ChannelResult<SupportForDroidStationOrder> orderResult;
+	int additionalTanks, additionalSpaceShips;
 	while (true)
 	{
-		// std::cout << _tradeFederationTag << "Ожидание запроса от станции дроидов" << std::endl;
 		Print(_tradeFederationTag, "Ожидание запроса от станции дроидов");
 		orderResult = _channelC5->Get();
 		order = orderResult.Data;
 		if (order.SupportType == SupportForDroidStationType::GroundDefense)
 		{
-			// std::cout << _tradeFederationTag << "Получен запрос на доп. средства назменой обороны" << std::endl;
 			Print(_tradeFederationTag, "Получен запрос на доп. средства назменой обороны");
 			if (IsItPossibleToSatisfyTheGroundRequest(order))
 			{
-				/*std::cout << _tradeFederationTag 
-					<< "Можно удовлетворить запрос на доп. средства назменой обороны. "
-					 << "Отправка..." << std::endl;*/
 				Print(_tradeFederationTag, "Можно удовлетворить запрос на доп. средства наземной обороны. Отправка...");
 				_currentAmountOfTanks -= order.SupportAmount;
 				support.SupportType = SupportForDroidStationType::GroundDefense;
 				support.SupportAmount = order.SupportAmount;
 				_channelC6->Put(support);
 			}
-			// иначе, не отвечать на запрос
+			else
+			{
+				Print(_tradeFederationTag, "нельзя удовлетворить запрос на доп. средства наземной обороны. Закупка на черном рынке...");
+				if (_blackMarket != nullptr)
+				{
+					while (!IsItPossibleToSatisfyTheGroundRequest(order)) // закупаемся до тех пор, пока не станет возможным удовлетворение запроса
+					{
+						additionalTanks = _blackMarket->BuyTanksSupply();
+						_currentAmountOfTanks += additionalTanks;
+					}
+					Print(_tradeFederationTag, "Можно удовлетворить запрос на доп. средства наземной обороны. Отправка...");
+					_currentAmountOfTanks -= order.SupportAmount;
+					support.SupportType = SupportForDroidStationType::GroundDefense;
+					support.SupportAmount = order.SupportAmount;
+					_channelC6->Put(support);
+				}
+			}			
 		}
 		else if (order.SupportType == SupportForDroidStationType::AirDefense)
 		{
-			// std::cout << _tradeFederationTag << "Получен запрос на доп. средтва ПВО" << std::endl;
 			Print(_tradeFederationTag, "Получен запрос на доп. средтва ПВО");
 			if (IsItPossibleToSatisfyTheAirRequest(order))
 			{
-				/*std::cout << _tradeFederationTag
-					<< "Можно удовлетворить запрос на доп. средства ПВО. "
-					<< "Отправка..." << std::endl;*/
 				Print(_tradeFederationTag, "Можно удовлетворить запрос на доп. средства ПВО. Отправка...");
 				_currentAmountOfAirDefense -= order.SupportAmount;
 				support.SupportType = SupportForDroidStationType::AirDefense;
 				support.SupportAmount = order.SupportAmount;
 				_channelC6->Put(support);
 			}
-			// иначе, не отвечать на запрос
+			else
+			{
+				Print(_tradeFederationTag, "нельзя удовлетворить запрос на доп. средства ПВО. Закупка на черном рынке...");
+				if (_blackMarket != nullptr)
+				{
+					while (!IsItPossibleToSatisfyTheAirRequest(order)) // закупаемся до тех пор, пока не станет возможным удовлетворение запроса
+					{
+						additionalSpaceShips = _blackMarket->BuySpaceShipSupply();
+						_currentAmountOfAirDefense += additionalSpaceShips;
+					}
+					Print(_tradeFederationTag, "Можно удовлетворить запрос на доп. средства ПВО. Отправка...");
+					_currentAmountOfAirDefense -= order.SupportAmount;
+					support.SupportType = SupportForDroidStationType::AirDefense;
+					support.SupportAmount = order.SupportAmount;
+					_channelC6->Put(support);
+				}
+			}
 		}
 		else
 		{
-			// std::cout << _tradeFederationTag << "Получен НЕПОНЯТНЫЙ запрос" << std::endl;
 			Print(_tradeFederationTag, "Получен НЕПОНЯТНЫЙ запрос");
 		}
 			

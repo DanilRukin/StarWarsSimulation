@@ -22,3 +22,8 @@
 #include "StarWarsAPI.h"
 #include "SupportForDroidStation.h"
 #include "TradeFederation.h"
+#include "Random.h"
+#include "Queue.h"
+#include "TanksCompany.h"
+#include "PlanetBlackMarket.h"
+#include "SpaceShipsCompany.h"

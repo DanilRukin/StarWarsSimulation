@@ -1,6 +1,7 @@
 #pragma once
 
 #include "StarWarsAPI.h"
+#include <Windows.h>
 
 namespace StarWarsSystem
 {
@@ -12,6 +13,18 @@ namespace StarWarsSystem
 	extern StarWarsObject const char* CHANNEL_C6_NAME;
 	extern StarWarsObject const char* CHANNEL_C7_NAME;
 	extern StarWarsObject const char* CHANNEL_C8_NAME;
+	extern StarWarsObject const char* CHANNEL_C9_NAME;
+	extern StarWarsObject const char* CHANNEL_C10_NAME;
 
 	extern StarWarsObject const char* SEMAPHORE_FOR_PRINT_NAME;
+
+	extern StarWarsObject CONDITION_VARIABLE TanksBufferNotEmpty;
+	extern StarWarsObject CONDITION_VARIABLE TanksBufferNotFull;
+	extern StarWarsObject CRITICAL_SECTION TanksBufferLock;
+
+	extern StarWarsObject CONDITION_VARIABLE SpaceShipsBufferNotEmpty;
+	extern StarWarsObject CONDITION_VARIABLE SpaceShipsBufferNotFull;
+	extern StarWarsObject CRITICAL_SECTION SpaceShipsBufferLock;
+
+	extern void StarWarsObject InitConditionVariablesAndCriticalSection();
 }

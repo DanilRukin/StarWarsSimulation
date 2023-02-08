@@ -8,5 +8,28 @@ const char* StarWarsSystem::CHANNEL_C5_NAME = "channel_c5";
 const char* StarWarsSystem::CHANNEL_C6_NAME = "channel_c6";
 const char* StarWarsSystem::CHANNEL_C7_NAME = "channel_c7";
 const char* StarWarsSystem::CHANNEL_C8_NAME = "channel_c8";
+const char* StarWarsSystem::CHANNEL_C9_NAME = "channel_c9";
+const char* StarWarsSystem::CHANNEL_C10_NAME = "channel_c10";
 
 const char* StarWarsSystem::SEMAPHORE_FOR_PRINT_NAME = "print_to_console";
+
+CRITICAL_SECTION StarWarsSystem::TanksBufferLock;
+CONDITION_VARIABLE StarWarsSystem::TanksBufferNotEmpty;
+CONDITION_VARIABLE StarWarsSystem::TanksBufferNotFull;
+
+CRITICAL_SECTION StarWarsSystem::SpaceShipsBufferLock;
+CONDITION_VARIABLE StarWarsSystem::SpaceShipsBufferNotEmpty;
+CONDITION_VARIABLE StarWarsSystem::SpaceShipsBufferNotFull;
+
+
+
+void StarWarsSystem::InitConditionVariablesAndCriticalSection()
+{
+	InitializeConditionVariable(&TanksBufferNotEmpty);
+	InitializeConditionVariable(&TanksBufferNotFull);
+	InitializeCriticalSection(&TanksBufferLock);
+
+	InitializeConditionVariable(&SpaceShipsBufferNotEmpty);
+	InitializeConditionVariable(&SpaceShipsBufferNotFull);
+	InitializeCriticalSection(&SpaceShipsBufferLock);
+}

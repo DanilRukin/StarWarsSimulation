@@ -1,12 +1,13 @@
 #include "CloneArmy.h"
 
-StarWarsSystem::CloneArmy::CloneArmy(int amountOfClones, int amountOfTanks, bool isMultiThread) 
+StarWarsSystem::CloneArmy::CloneArmy(int amountOfClones, int amountOfTanks, bool isMultiThread, int waitReinforcementsTime)
 	: PrintableObject(isMultiThread)
 {
 	_channelC1 = new Core::Channel<Report>(CHANNEL_C1_NAME);
 	_channelC2 = new Core::Channel<Damage>(CHANNEL_C2_NAME);
 	_channelC4 = new Core::Channel<int>(CHANNEL_C4_NAME);
 	_channelC8 = new Core::Channel<CommandCenterOrder>(CHANNEL_C8_NAME);
+	_channelC10 = new Core::Channel<int>(CHANNEL_C10_NAME);
 	_amountOfClones = amountOfClones;
 	_maxAmountOfClones = amountOfClones;
 	_amountOfTanks = amountOfTanks;
@@ -15,8 +16,8 @@ StarWarsSystem::CloneArmy::CloneArmy(int amountOfClones, int amountOfTanks, bool
 	_cloneWarriorDamage = 150;
 	_tankHP = 10000;
 	_tankDamage = 8000;
+	_waitReinforcementsTime = waitReinforcementsTime;
 	Print(_armyTag, "армия клонов создана");
-	// std::cout << _armyTag << "армия клонов создана" << std::endl;
 }
 
 StarWarsSystem::CloneArmy::~CloneArmy()
@@ -66,6 +67,14 @@ void StarWarsSystem::CloneArmy::AcceptDamage(int damage)
 		_amountOfTanks = 0;
 }
 
+void StarWarsSystem::CloneArmy::AcceptReinforcements(int reinforcements)
+{
+	_amountOfTanks += reinforcements;
+	if (_amountOfTanks > _maxAmountOfTanks)
+		_maxAmountOfTanks = _amountOfTanks;
+	return;
+}
+
 void StarWarsSystem::CloneArmy::Run()
 {
 	Print(_armyTag, "армия клонов запущена");
@@ -81,45 +90,44 @@ void StarWarsSystem::CloneArmy::Run()
 		// отправка отчета о состоянии в командный центр
 		_stateReport = Report::ArmyReport(_amountOfClones, _maxAmountOfClones, _amountOfTanks, _maxAmountOfTanks);
 		Print(_armyTag, "отчет создан");
-		// std::cout << _armyTag << "отчет создан, отправляется в командный центр" << std::endl;
-		// std::cout << _armyTag << "отчет отправляется в командный центр" << std::endl;
 		_channelC1->Put(_stateReport);
 
 		// ожидание приказа от командного центра
 		Print(_armyTag, "ожидание приказа от командного центра");
-		// std::cout << _armyTag << "ожидание приказа от командного центра" << std::endl;
 		orderResult = _channelC8->Get();
 		order = orderResult.Data;
 		Print(_armyTag, "приказ от командного центра получен");
-		// std::cout << _armyTag << "приказ от командного центра получен" << std::endl;
 
 		if (order == CommandCenterOrder::StopAttack)
 		{
-			Print(_armyTag, "остановка атаки - перегруппировка");
-			// std::cout << _armyTag << "остановка атаки - перегруппировка" << std::endl;
+			Print(_armyTag, "остановка атаки - перегруппировка. Ожидание подкреплений...");
+			responseResult = _channelC10->Get(_waitReinforcementsTime);
+			if (responseResult.WaitStatus == WAIT_TIMEOUT)
+			{
+				Print(_armyTag, "ожидание подкреплений прекращено по тайм-ауту");
+			}
+			else
+			{
+				message = "подкрепления получены в количестве [" + std::to_string(responseResult.Data) + "]. Присоединение к силам армии.";
+				Print(_armyTag, message.c_str());
+				AcceptReinforcements(responseResult.Data);
+			}
 		}
 		else
 		{
 			Print(_armyTag, "проведение наступательного действия");
-			// std::cout << _armyTag << "проведение наступательного действия" << std::endl;
 			
 			damage = DoDamageForDroidStation();
 			message = "атака на станцию дроидов, передаваемый абсолютный урон = " + std::to_string(damage.DamageAmount);
 			Print(_armyTag, message.c_str());
-			/*std::cout << _armyTag << "атака на станцию дроидов, передаваемый абсолютный урон = "
-				<< damage.DamageAmount
-				<< std::endl;*/
 			_channelC2->Put(damage);
 			
 			Print(_armyTag, "ожидание ответа от станции дроидов");
-			// std::cout << _armyTag << "ожидание ответа от станции дроидов" << std::endl;
 			responseResult = _channelC4->Get();
 			responseFromDroidStation = responseResult.Data;
 			message = "ответ от станции дроидов получен, применение полученного урона (" + std::to_string(responseResult.Data) + ")";
 			Print(_armyTag, message.c_str());
-			/*std::cout << _armyTag << "ответ от станции дроидов получен, применение полученного урона ("
-				<< responseResult.Data << ")"
-				<< std::endl;*/
+
 			AcceptDamage(responseFromDroidStation);
 		}
 	}

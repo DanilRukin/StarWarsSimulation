@@ -4,6 +4,7 @@
 #include "SpaceFleet.h"
 #include "DroidStation.h"
 #include "TradeFederation.h"
+#include "PlanetBlackMarket.h"
 
 using namespace StarWarsSystem;
 
@@ -62,8 +63,8 @@ int main()
     bool isMultiThread = true;
     HANDLE commandCenterThread, cloneArmyThread, fleetThread, droidStationThread, tradeFederationThread;
     DWORD commandCenterThreadId, cloneArmyThreadId, fleetThreadId, droidStationThreadId, tradeFederationThreadId;
-    army = new CloneArmy(100, 10, isMultiThread);
-    fleet = new SpaceFleet(isMultiThread);
+    army = new CloneArmy(100, 10, isMultiThread, 30000);
+    fleet = new SpaceFleet(isMultiThread, 30000);
     commandCenter = new CommandCenter(isMultiThread);
     station = new DroidStation(1000000, 10000, 5000, isMultiThread, 30000);
     federation = new TradeFederation(10000000, 10000000, isMultiThread);

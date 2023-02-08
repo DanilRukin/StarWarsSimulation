@@ -4,6 +4,7 @@
 #include "Channel.h"
 #include "SupportForDroidStation.h"
 #include "PrintableObject.h"
+#include "PlanetBlackMarket.h"
 
 
 namespace StarWarsSystem
@@ -15,8 +16,9 @@ namespace StarWarsSystem
 		Core::Channel<SupportForDroidStationOrder>* _channelC5; // для приема заказа от станции дроидов
 		int _currentAmountOfAirDefense, _currentAmountOfTanks;
 		const char* _tradeFederationTag = "[Trade Federation]: ";
+		PlanetBlackMarket* _blackMarket = nullptr;
 	public:
-		TradeFederation(int amountOfAirDefense, int amountOfTanks, bool isMultiThread);
+		TradeFederation(int amountOfAirDefense, int amountOfTanks, bool isMultiThread, PlanetBlackMarket* blackMarket = nullptr);
 		~TradeFederation();
 		/**
 		* Оценка возможности удовлетворить заказ на доп. средства ПВО

@@ -1,12 +1,13 @@
 #include "SpaceFleet.h"
 #include <iostream>
 
-StarWarsSystem::SpaceFleet::SpaceFleet(bool isMultiThread) : PrintableObject(isMultiThread)
+StarWarsSystem::SpaceFleet::SpaceFleet(bool isMultiThread, int waitReinforcementsTime) : PrintableObject(isMultiThread)
 {
 	SpaceShips::SpaceShipsFactory factory;
 	_firstFlagship = factory.CreateFlagship();
 	_secondFlagship = factory.CreateFlagship();
 	_fighterjetsCount = 100;
+	_waitReinforcementsTime = waitReinforcementsTime;
 	_fighterjets = new SpaceShips::FighterJet * [_fighterjetsCount];
 	for (int i = 0; i < _fighterjetsCount; i++)
 	{
@@ -16,8 +17,8 @@ StarWarsSystem::SpaceFleet::SpaceFleet(bool isMultiThread) : PrintableObject(isM
 	_channelC2 = new Core::Channel<Damage>(CHANNEL_C2_NAME);
 	_channelC3 = new Core::Channel<int>(CHANNEL_C3_NAME);
 	_channelC7 = new Core::Channel<CommandCenterOrder>(CHANNEL_C7_NAME);
+	_channelC9 = new Core::Channel<int>(CHANNEL_C9_NAME);
 	Print(_spaceFleetTag, "космический флот создан");
-	// std::cout << _spaceFleetTag << "космический флот создан" << std::endl;
 }
 
 StarWarsSystem::SpaceFleet::~SpaceFleet()
@@ -77,10 +78,46 @@ void StarWarsSystem::SpaceFleet::AcceptDamage(int damage)
 	}
 }
 
+void StarWarsSystem::SpaceFleet::AcceptReinforcements(int reinforcements)
+{
+	SpaceShips::SpaceShipsFactory factory;
+	for (int i = 0; i < _fighterjetsCount; i++)
+	{
+		if (reinforcements > 0)
+		{
+			if (_fighterjets[i]->CurrentStatus() == SpaceShips::SpaceShipStatus::Destroyed)
+			{
+				delete _fighterjets[i];
+				_fighterjets[i] = factory.CreateFighterJet();
+				reinforcements--;
+			}
+		}
+		break;
+	}
+	if (reinforcements > 0)
+	{
+		if (_firstFlagship->CurrentStatus() == SpaceShips::SpaceShipStatus::Destroyed)
+		{
+			delete _firstFlagship;
+			_firstFlagship = factory.CreateFlagship();
+			reinforcements--;
+		}			
+	}
+	if (reinforcements > 0)
+	{
+		if (_secondFlagship->CurrentStatus() == SpaceShips::SpaceShipStatus::Destroyed)
+		{
+			delete _secondFlagship;
+			_secondFlagship = factory.CreateFlagship();
+			reinforcements--;
+		}
+	}
+	return;
+}
+
 void StarWarsSystem::SpaceFleet::Run()
 {
 	Print(_spaceFleetTag, "запуск");
-	// std::cout << _spaceFleetTag << "запуск" << std::endl;
 	Report report;
 	int aliveFighterjetsCount, responseFromDroidStation;
 	Core::ChannelResult<CommandCenterOrder> orderResult;
@@ -91,7 +128,6 @@ void StarWarsSystem::SpaceFleet::Run()
 	while (true)
 	{
 		Print(_spaceFleetTag, "создание отчета о состоянии и отправка в командный центр...");
-		// std::cout << _spaceFleetTag << "создание отчета о состоянии и отправка в командный центр..." << std::endl;
 		aliveFighterjetsCount = 0;
 		for (int i = 0; i < _fighterjetsCount; i++)
 		{
@@ -103,40 +139,40 @@ void StarWarsSystem::SpaceFleet::Run()
 		_channelC1->Put(report);
 
 		Print(_spaceFleetTag, "ожидание приказа от командного центра...");
-		// std::cout << _spaceFleetTag << "ожидание приказа от командного центра..." << std::endl;
 		orderResult = _channelC7->Get();
 		order = orderResult.Data;
 		if (order == CommandCenterOrder::StartAttack)
 		{
 			Print(_spaceFleetTag, "получен приказ о проведении атакующего действия");
-			// std::cout << _spaceFleetTag << "получен приказ о проведении атакующего действия" << std::endl;
 			damage = DoDamageForDroidStation();
 			message = "Нанесение удара по станции дроидов с уроном = " + std::to_string(damage.DamageAmount);
 			Print(_spaceFleetTag, message.c_str());
-			/*std::cout << _spaceFleetTag << "Нанесение удара по станции дроидов с уроном = "
-				<< damage.DamageAmount
-				<< std::endl;*/
 			_channelC2->Put(damage);
 			Print(_spaceFleetTag, "ожидание ответных действий от станции дроидов...");
-			// std::cout << _spaceFleetTag << "ожидание ответных действий от станции дроидов..." << std::endl;
 			responseResult = _channelC3->Get();
 			responseFromDroidStation = responseResult.Data;
 			message = "получен урон от станции дроидов = " + std::to_string(responseFromDroidStation);
 			Print(_spaceFleetTag, message.c_str());
-			/*std::cout << _spaceFleetTag << "получен урон от станции дроидов = "
-				<< responseFromDroidStation
-				<< std::endl;*/
 			AcceptDamage(responseFromDroidStation);
 		}
 		else if (order == CommandCenterOrder::StopAttack)
 		{
-			Print(_spaceFleetTag, "получен приказ об отступлении... перегруппировка");
-			// std::cout << _spaceFleetTag << "получен приказ об отступлении... перегруппировка" << std::endl;
+			Print(_spaceFleetTag, "получен приказ об отступлении... перегруппировка. Ожидание подкреплений от командного центра");
+			responseResult = _channelC9->Get(_waitReinforcementsTime);
+			if (responseResult.WaitStatus == WAIT_TIMEOUT)
+			{
+				Print(_spaceFleetTag, "ожидание подкреплений прекращено по тайм-ауту");
+			}
+			else
+			{
+				message = "получены подкрепления в количестве [" + std::to_string(responseResult.Data) + "]. Присоединение к силам флота.";
+				Print(_spaceFleetTag, message.c_str());
+				AcceptReinforcements(responseResult.Data);
+			}
 		}
 		else
 		{
 			Print(_spaceFleetTag, "получен НЕПОНЯТНЫЙ приказ");
-			// std::cout << _spaceFleetTag << "получен НЕПОНЯТНЫЙ приказ" << std::endl;
 		}			
 	}
 }
