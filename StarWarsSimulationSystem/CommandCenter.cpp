@@ -28,7 +28,7 @@ bool StarWarsSystem::CommandCenter::IsFleetStateOk(Report report) // оценивает с
 		return true;
 }
 
-StarWarsSystem::CommandCenter::CommandCenter(bool isMultiThread, PlanetBlackMarket* blackMarket) : PrintableObject(isMultiThread)
+StarWarsSystem::CommandCenter::CommandCenter(bool isMultiThread, PlanetBlackMarket* blackMarket) : ReadWriteLockObject(isMultiThread)
 {
 	_channelC1 = new Core::Channel<Report>(CHANNEL_C1_NAME);
 	_channelC7 = new Core::Channel<CommandCenterOrder>(CHANNEL_C7_NAME);
@@ -63,10 +63,23 @@ void StarWarsSystem::CommandCenter::Run()
 				if (_blackMarket != nullptr)
 				{
 					Print(_commandCenterTag, "Закупка дополнительного вооружения для флота на черном рынке");
+					// read write lock
+					_e->WaitOne(); // ждем эстафету на ввод
+					if (NUM_W > 0)
+					{
+						WAIT_R++; // появился читатель
+						_e->Release();
+						_r->WaitOne(); // ждем эстафету на чтение
+					}
+					NUM_R++;
+					Estafeta();
+					// эстафету получили - работаем! 
 					additionalSpaceShips = _blackMarket->BuySpaceShipSupply();
 					message = "Дополнительное вооружение для флота в количестве [" + std::to_string(additionalSpaceShips) + "] закуплено. Отправка...";
 					Print(_commandCenterTag, message.c_str());
-
+					_e->WaitOne(); // ждем эстафету - отметить конец работы
+					NUM_R--;
+					Estafeta();
 					_channelC9->Put(additionalSpaceShips); // отправка вооружений					
 				}
 			}
@@ -94,10 +107,23 @@ void StarWarsSystem::CommandCenter::Run()
 				if (_blackMarket != nullptr)
 				{
 					Print(_commandCenterTag, "Закупка дополнительного вооружения для армии клонов на черном рынке");
+					// read write lock
+					_e->WaitOne(); // ждем эстафету на ввод
+					if (NUM_W > 0)
+					{
+						WAIT_R++; // появился читатель
+						_e->Release();
+						_r->WaitOne(); // ждем эстафету на чтение
+					}
+					NUM_R++;
+					Estafeta();
+					// эстафету получили - работаем!
 					additionalTanks = _blackMarket->BuyTanksSupply();
 					message = "Дополнительное вооружение для армии в количестве [" + std::to_string(additionalTanks) + "] закуплено. Отправка...";
 					Print(_commandCenterTag, message.c_str());
-
+					_e->WaitOne(); // ждем эстафету - отметить конец работы
+					NUM_R--;
+					Estafeta();
 					_channelC10->Put(additionalTanks); // отправка вооружений					
 				}
 			}

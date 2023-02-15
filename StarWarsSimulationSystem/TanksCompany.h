@@ -4,10 +4,11 @@
 #include "PrintableObject.h"
 #include "PlanetBlackMarket.h"
 #include "Random.h"
+#include "ReadWriteLockObject.h"
 
 namespace StarWarsSystem
 {
-	class StarWarsObject TanksCompany : public PrintableObject
+	class StarWarsObject TanksCompany : public ReadWriteLockObject
 	{
 	private:
 		PlanetBlackMarket* _blackMarket;

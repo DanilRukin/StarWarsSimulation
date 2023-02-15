@@ -27,4 +27,12 @@ namespace StarWarsSystem
 	extern StarWarsObject CRITICAL_SECTION SpaceShipsBufferLock;
 
 	extern void StarWarsObject InitConditionVariablesAndCriticalSection();
+
+	extern StarWarsObject const char* WRITE_SEMAPHORE_NAME;
+	extern StarWarsObject const char* READ_SEMAPHORE_NAME;
+	extern StarWarsObject const char* E_SEMAPHORE_NAME;
+	extern StarWarsObject int NUM_R;
+	extern StarWarsObject int NUM_W;
+	extern StarWarsObject int WAIT_R;
+	extern StarWarsObject int WAIT_W;
 }

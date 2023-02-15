@@ -6,6 +6,7 @@
 #include "GlabalNames.h"
 #include "PrintableObject.h"
 #include "PlanetBlackMarket.h"
+#include "ReadWriteLockObject.h"
 
 namespace StarWarsSystem
 {
@@ -22,7 +23,7 @@ namespace StarWarsSystem
 	*  ласс командного центра дл€ удаленного управлени€ армией клонов и космическим флотом.
 	* ¬се наименовани€ переменных соответствуют разработанной схеме.
 	*/
-	class StarWarsObject CommandCenter : public PrintableObject
+	class StarWarsObject CommandCenter : public ReadWriteLockObject
 	{
 	private:
 		/* “.к. HANDLE канала открываетс€/создаетс€ по имени, то _channelC7 в этом классе будет указывать на тот же

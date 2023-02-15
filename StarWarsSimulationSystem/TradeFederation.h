@@ -5,11 +5,12 @@
 #include "SupportForDroidStation.h"
 #include "PrintableObject.h"
 #include "PlanetBlackMarket.h"
+#include "ReadWriteLockObject.h"
 
 
 namespace StarWarsSystem
 {
-	class StarWarsObject TradeFederation : public PrintableObject
+	class StarWarsObject TradeFederation : public ReadWriteLockObject
 	{
 	private:
 		Core::Channel<SupportForDroidStation>* _channelC6; // для отправки помощи станции дроидов

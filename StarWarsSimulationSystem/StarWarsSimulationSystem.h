@@ -27,3 +27,5 @@
 #include "TanksCompany.h"
 #include "PlanetBlackMarket.h"
 #include "SpaceShipsCompany.h"
+#include "ReadWriteLockObject.h"
+#include "PlanetBlackMarketRWL.h"

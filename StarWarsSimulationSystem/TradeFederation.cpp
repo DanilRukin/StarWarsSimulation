@@ -3,7 +3,7 @@
 #include "PrintableObject.h"
 #include <iostream>
 
-StarWarsSystem::TradeFederation::TradeFederation(int amountOfAirDefense, int amountOfTanks, bool isMultiThread, PlanetBlackMarket* blackMarket) : PrintableObject(isMultiThread)
+StarWarsSystem::TradeFederation::TradeFederation(int amountOfAirDefense, int amountOfTanks, bool isMultiThread, PlanetBlackMarket* blackMarket) : ReadWriteLockObject(isMultiThread)
 {
 	if (amountOfAirDefense < 1)
 		_currentAmountOfAirDefense = 1;
@@ -83,13 +83,28 @@ void StarWarsSystem::TradeFederation::Run()
 				{
 					while (!IsItPossibleToSatisfyTheGroundRequest(order)) // закупаемся до тех пор, пока не станет возможным удовлетворение запроса
 					{
+						// read write lock
+						_e->WaitOne(); // ждем эстафету на ввод
+						if (NUM_W > 0)
+						{
+							WAIT_R++; // появился читатель
+							_e->Release();
+							_r->WaitOne(); // ждем эстафету на чтение
+						}
+						NUM_R++;
+						Estafeta();
+						// эстафету получили - работаем!
 						additionalTanks = _blackMarket->BuyTanksSupply();
 						_currentAmountOfTanks += additionalTanks;
+						_e->WaitOne(); // ждем эстафету - отметить конец работы
+						NUM_R--;
+						Estafeta();
 					}
 					Print(_tradeFederationTag, "Можно удовлетворить запрос на доп. средства наземной обороны. Отправка...");
 					_currentAmountOfTanks -= order.SupportAmount;
 					support.SupportType = SupportForDroidStationType::GroundDefense;
 					support.SupportAmount = order.SupportAmount;
+					
 					_channelC6->Put(support);
 				}
 			}			
@@ -112,8 +127,22 @@ void StarWarsSystem::TradeFederation::Run()
 				{
 					while (!IsItPossibleToSatisfyTheAirRequest(order)) // закупаемся до тех пор, пока не станет возможным удовлетворение запроса
 					{
+						// read write lock
+						_e->WaitOne(); // ждем эстафету на ввод
+						if (NUM_W > 0)
+						{
+							WAIT_R++; // появился читатель
+							_e->Release();
+							_r->WaitOne(); // ждем эстафету на чтение
+						}
+						NUM_R++;
+						Estafeta();
+						// эстафету получили - работаем!
 						additionalSpaceShips = _blackMarket->BuySpaceShipSupply();
 						_currentAmountOfAirDefense += additionalSpaceShips;
+						_e->WaitOne(); // ждем эстафету - отметить конец работы
+						NUM_R--;
+						Estafeta();
 					}
 					Print(_tradeFederationTag, "Можно удовлетворить запрос на доп. средства ПВО. Отправка...");
 					_currentAmountOfAirDefense -= order.SupportAmount;

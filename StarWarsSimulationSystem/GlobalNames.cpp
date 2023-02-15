@@ -33,3 +33,11 @@ void StarWarsSystem::InitConditionVariablesAndCriticalSection()
 	InitializeConditionVariable(&SpaceShipsBufferNotFull);
 	InitializeCriticalSection(&SpaceShipsBufferLock);
 }
+
+const char* StarWarsSystem::WRITE_SEMAPHORE_NAME = "SemWWW";
+const char* StarWarsSystem::READ_SEMAPHORE_NAME = "SemRRR";
+const char* StarWarsSystem::E_SEMAPHORE_NAME = "SemEEE";
+int StarWarsSystem::NUM_R = 0;
+int StarWarsSystem::NUM_W = 0;
+int StarWarsSystem::WAIT_R = 0;
+int StarWarsSystem::WAIT_W = 0;
